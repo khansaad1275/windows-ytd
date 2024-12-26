@@ -1,23 +1,15 @@
 @echo off
-cls
 setlocal enabledelayedexpansion
 
-:: Define the output directory
-set OUTPUT_PATH=%USERPROFILE%\Videos
+:: Ask for the YouTube URL
+set /p url="Enter YouTube URL: "
 
-:: Check if yt-dlp is installed
-where yt-dlp >nul 2>nul
-if errorlevel 1 (
-    echo yt-dlp is not installed. Please run the install_yt-dlp.bat script first.
-    pause
-    exit /b
-)
+:: Remove unwanted parameters like "list", "start_radio"
+for /f "delims=" %%i in ('echo %url% ^| findstr /r "^https://www.youtube.com/watch\?v="') do set cleaned_url=%%i
+set cleaned_url=%cleaned_url:&list=*%
+set cleaned_url=%cleaned_url:&start_radio=*%
 
-:: Ask user to enter the YouTube link
-set /p VIDEO_URL="Enter YouTube URL: "
-
-:: Show the quality options
-echo.
+:: Ask for download quality
 echo Please choose a download quality:
 echo 1. Music (MP3)
 echo 2. Video 360p
@@ -25,35 +17,33 @@ echo 3. Video 480p
 echo 4. Video 720p
 echo 5. Video 1080p
 echo 6. Video 2160p
-set /p option="Select an option (1-6): "
+set /p quality="Select an option (1-6): "
 
-:: Choose download format based on user's input
-if "%option%"=="1" (
-    set FORMAT=140
-) else if "%option%"=="2" (
-    set FORMAT="best[height<=360]"
-) else if "%option%"=="3" (
-    set FORMAT="best[height<=480]"
-) else if "%option%"=="4" (
-    set FORMAT="best[height<=720]"
-) else if "%option%"=="5" (
-    set FORMAT="best[height<=1080]"
-) else if "%option%"=="6" (
-    set FORMAT="best[height<=2160]"
+:: Set download format based on choice
+if "%quality%"=="1" (
+    set format=140
+) else if "%quality%"=="2" (
+    set format=best[height<=360]
+) else if "%quality%"=="3" (
+    set format=best[height<=480]
+) else if "%quality%"=="4" (
+    set format=best[height<=720]
+) else if "%quality%"=="5" (
+    set format=best[height<=1080]
+) else if "%quality%"=="6" (
+    set format=best[height<=2160]
 ) else (
-    echo Invalid option selected. Exiting.
-    pause
+    echo Invalid option!
     exit /b
 )
 
-:: Download the video in the selected format
-yt-dlp -f %FORMAT% %VIDEO_URL% -o "%OUTPUT_PATH%\%(title)s.%(ext)s"
+:: Download video using yt-dlp
+yt-dlp -f %format% %cleaned_url%
 
-:: Check if download was successful
-if %errorlevel% equ 0 (
-    echo Download successful! Files saved to %OUTPUT_PATH%.
-) else (
+if %errorlevel% neq 0 (
     echo An error occurred while downloading.
+) else (
+    echo Download complete!
 )
 
 pause
