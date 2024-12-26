@@ -4,7 +4,7 @@ setlocal EnableDelayedExpansion
 :: Prompt the user for a YouTube URL
 set /p "url=Enter YouTube URL: "
 
-:: Escape special characters in the URL (handles '&' and other characters)
+:: Handle special characters in URL (escape '&' and other potential issues)
 set "url=!url:&=^&!"
 
 :: Ask the user for the quality option
@@ -25,6 +25,7 @@ if "%quality%"=="4" set "format=22"   :: Video 720p
 if "%quality%"=="5" set "format=137"  :: Video 1080p
 if "%quality%"=="6" set "format=137"  :: Video 2160p
 
-:: Run yt-dlp with the selected format and URL
+:: Ensure that the URL is passed correctly to yt-dlp
 yt-dlp -f !format! "!url!" -o "%USERPROFILE%\Videos\%(title)s.%(ext)s"
+
 pause
