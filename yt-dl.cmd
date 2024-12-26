@@ -25,7 +25,7 @@ if "%quality%"=="4" set "format=22"   :: Video 720p
 if "%quality%"=="5" set "format=137"  :: Video 1080p
 if "%quality%"=="6" set "format=137"  :: Video 2160p
 
-:: Ensure that the URL is passed correctly to yt-dlp
+:: Ensure that the URL is passed correctly to yt-dlp (using quotes and handling & properly)
 yt-dlp -f !format! "!url!" -o "%USERPROFILE%\Videos\%(title)s.%(ext)s"
 
 pause
